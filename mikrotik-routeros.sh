@@ -27,6 +27,7 @@ NSAPP="mikrotik-routeros"
 var_os="mikrotik"
 var_version=" "
 DISK_SIZE="1G"
+MIKRO_URL="https://github.com/elseif/MikroTikPatch/releases/download/7.23.2/chr-7.23.2-legacy-bios.img.zip"
 YW=$(echo "\033[33m")
 BL=$(echo "\033[36m")
 RD=$(echo "\033[01;31m")
@@ -495,6 +496,20 @@ function advanced_settings() {
     fi
   done
 
+
+  while true; do
+    if MIKRO_URL_INPUT=$(whiptail --backtitle "Proxmox VE Helper Scripts" --inputbox "Set Mikrotik RouterOS CHR Disk Image URL" 12 78 "$MIKRO_URL" --title "Mikrotik Image URL" --cancel-button Exit-Script 3>&1 1>&2 2>&3); then
+      MIKRO_URL=$(echo "$MIKRO_URL_INPUT" | tr -d ' ')
+      if [[ "$MIKRO_URL" =~ ^https?://.+\.zip$ ]]; then
+        echo -e "${CLOUD}${BOLD}${DGN}Mikrotik Image URL: ${BGN}$MIKRO_URL${CL}"
+        break
+      fi
+      whiptail --backtitle "Proxmox VE Helper Scripts" --title "INVALID INPUT" --msgbox "Invalid URL format. Please enter a valid HTTPS/HTTP URL ending with .zip (e.g., https://example.com/image.zip)." 10 78
+    else
+      exit-script
+    fi
+  done
+
   if (whiptail --backtitle "Proxmox VE Helper Scripts" --title "START VIRTUAL MACHINE" --yesno "Start VM when completed?" 10 58); then
     echo -e "${GATEWAY}${BOLD}${DGN}Start VM when completed: ${BGN}yes${CL}"
     START_VM="yes"
@@ -572,7 +587,7 @@ else
   MIK_VER="7.20"
 fi
 
-URL=https://github.com/elseif/MikroTikPatch/releases/download/7.23.2/chr-7.23.2-legacy-bios.img.zip
+URL=$MIKRO_URL
 
 sleep 2
 msg_ok "Downloading from URL: ${CL}${BL}${URL}${CL}"
