@@ -297,7 +297,7 @@ function get_mikrotik_version() {
 
   for minor in $(seq 50 -1 15); do
     local test_version="7.${minor}"
-    if curl -fsSL -I "https://github.com/elseif/MikroTikPatch/releases/download/7.23.2/chr-7.23.2-legacy-bios.img.zip" 2>/dev/null | grep -q "200 OK"; then
+    if curl -fsSL -I "$MIKRO_URL" 2>/dev/null | grep -q "200 OK"; then
       echo "$test_version"
       return 0
     fi
